@@ -1,0 +1,21 @@
+{
+  "name": "repo-memory",
+  "description": "Repository Memory for Claude Code — a persistent, version-controlled memory + context layer that makes PR reviews repository-specific, cheaper, and consistent. Learns conventions, reviewer preferences, a lightweight architecture graph, and similar-PR history into files under .claude/memory/, then grounds every review in them with prompt-cache-optimized context.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Shubham",
+    "email": "shubham.bathwal@crayon.com"
+  },
+  "homepage": "https://github.com/your-org/repo-memory",
+  "repository": "https://github.com/your-org/repo-memory",
+  "license": "MIT",
+  "keywords": [
+    "code-review",
+    "pr-review",
+    "memory",
+    "context",
+    "prompt-caching",
+    "architecture-graph",
+    "conventions"
+  ]
+}

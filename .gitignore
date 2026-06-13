@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Editor / OS noise
+*.swp
+*~
+Thumbs.db
+
+# Local test scratch
+/.tmp-install-test/

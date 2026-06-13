@@ -1,0 +1,73 @@
+# Repository Memory — refresh memory on merge (Loop B).
+#
+# On every merged PR, runs /repo-memory:update-memory to mine the review thread,
+# incrementally update the architecture graph, index the PR for similar-PR recall,
+# lightly refresh affected conventions, regenerate MEMORY-STATUS.md, and COMMIT the
+# refreshed memory files back to the repo. This is how memory stays fresh with zero upkeep.
+#
+# Setup:
+#   1. Add ANTHROPIC_API_KEY (or CLAUDE_CODE_OAUTH_TOKEN) to repo Actions secrets.
+#   2. Replace the your-org/repo-memory placeholders below with the plugin's repo.
+#   3. If your default branch is protected against direct pushes, see the note at the
+#      bottom — switch the commit step to open a PR instead of pushing to the base branch.
+name: Repo Memory - Update on Merge
+
+on:
+  pull_request:
+    types: [closed]
+  workflow_dispatch:        # manual trigger (e.g. first-time backfill)
+
+concurrency:
+  group: repo-memory-update          # serialize commits to memory files
+  cancel-in-progress: false
+
+permissions:
+  contents: write          # commit refreshed .claude/memory/** back to the repo
+  pull-requests: read      # read the merged PR thread + diff
+  id-token: write
+
+jobs:
+  update-memory:
+    # Only on a real merge, and never from the bot's own merges (no learning from itself).
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true && github.actor != 'claude[bot]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.base.ref || github.ref_name }}   # commit memory to the base branch
+          fetch-depth: 0                                                       # full history for graph + git log
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          plugin_marketplaces: "https://github.com/your-org/repo-memory.git"
+          plugins: "repo-memory@repo-memory-marketplace"
+          prompt: |
+            REPO: ${{ github.repository }}
+            MERGED PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Run the /repo-memory:update-memory skill for the just-merged PR:
+              1. Mine the PR thread (review-memory) — update patterns + reviewer prefs.
+              2. Incrementally update .claude/memory/architecture-graph.json (repo-graph).
+              3. Index the PR into .claude/memory/pr-index/ (similar-pr).
+              4. Light refresh of conventions touched by the merged files (repo-dna).
+              5. Regenerate MEMORY-STATUS.md.
+
+            Then commit ONLY the changed memory + dashboard files back to this branch:
+              git add .claude/memory MEMORY-STATUS.md
+              git commit -m "chore(memory): update from PR #${{ github.event.pull_request.number }}"
+              git push
+
+            Do not modify application code. Keep entries evidence-backed and confidence-honest.
+          claude_args: |
+            --allowedTools "Bash(gh pr view:*),Bash(gh pr diff:*),Bash(git:*),Read,Write,Edit,Grep,Glob,Task"
+
+# Branch-protection note:
+#   If the default branch blocks direct pushes, change the final step in the prompt to:
+#     git checkout -b memory/update-pr-${{ github.event.pull_request.number }}
+#     ...commit...
+#     git push -u origin HEAD
+#     gh pr create --fill --base ${{ github.event.pull_request.base.ref }}
+#   and add `pull-requests: write` to permissions so the memory update lands as a reviewable PR.

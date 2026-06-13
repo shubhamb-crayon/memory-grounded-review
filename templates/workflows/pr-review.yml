@@ -1,0 +1,62 @@
+# Repository Memory — automated, memory-grounded PR review (Loop B).
+#
+# Runs the official anthropics/claude-code-action (full Claude Code runtime in CI),
+# loads the repo-memory plugin, and runs /repo-memory:pr-review on every opened/updated PR.
+# Findings post as inline comments on the exact diff lines.
+#
+# Setup:
+#   1. Add ANTHROPIC_API_KEY (or CLAUDE_CODE_OAUTH_TOKEN) to repo Actions secrets.
+#   2. Replace the your-org/repo-memory placeholders below with the plugin's repo.
+name: Repo Memory - PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+# One review per PR at a time; cancel superseded runs (replay handles new commits cheaply).
+concurrency:
+  group: repo-memory-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read          # read code + .claude/memory
+  pull-requests: write    # post inline + summary comments
+  id-token: write         # OIDC for the action
+
+jobs:
+  review:
+    # Bot-loop guard: never let the review bot review its own commits.
+    if: github.actor != 'claude[bot]' && github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0   # full history so graph + base...head diffs work
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Load the Repository Memory plugin so /repo-memory:* skills are available.
+          plugin_marketplaces: "https://github.com/your-org/repo-memory.git"
+          plugins: "repo-memory@repo-memory-marketplace"
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Run the Repository Memory review for this pull request:
+
+            Use the /repo-memory:pr-review skill. Ground every finding in this repo's
+            memory under .claude/memory/ (repo-dna rules, review-memory patterns, the
+            architecture impact set, and the top-3 similar past PRs). Classify risk per
+            changed file and go deeper on high-risk files (auth, security, migrations,
+            infra), escalating to the security-deep-dive subagent where warranted.
+
+            Do not re-litigate decisions already recorded in review-memory.
+            The PR branch is already checked out in the working directory.
+
+            Post specific, kind, inline comments on the exact diff lines, each citing the
+            memory rule id / PR # / evidence behind it, plus a brief top-level summary
+            (risk class, counts by severity, which rules/PRs were applied).
+            Only post GitHub comments — do not submit the review as chat text.
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git:*),Read,Grep,Glob,Task"

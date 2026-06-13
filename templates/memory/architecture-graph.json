@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "generated_at": "2026-06-12T18:02:00Z",
+  "note": "Seed example. Lightweight dependency graph — dependency edges only, used to expand the impact set (changed nodes + direct neighbors). Rebuilt by repo-graph; incrementally updated on merge.",
+  "node_count": 8,
+  "edge_count": 8,
+  "nodes": [
+    {
+      "id": "ep:POST /login",
+      "kind": "endpoint",
+      "path": "src/api/login.ts",
+      "summary_ref": "summaries/files/src/api/login.md",
+      "risk": "high",
+      "tags": ["auth", "api"]
+    },
+    {
+      "id": "ep:POST /orders",
+      "kind": "endpoint",
+      "path": "src/api/orders.ts",
+      "risk": "medium",
+      "tags": ["api", "orders"]
+    },
+    {
+      "id": "svc:auth",
+      "kind": "service",
+      "path": "src/services/auth",
+      "summary_ref": "summaries/files/src/services/auth.md",
+      "risk": "high",
+      "tags": ["auth", "security"]
+    },
+    {
+      "id": "svc:orders",
+      "kind": "service",
+      "path": "src/services/orders",
+      "risk": "medium",
+      "tags": ["orders"]
+    },
+    {
+      "id": "mw:rate-limit",
+      "kind": "module",
+      "path": "src/middleware/rate-limit.ts",
+      "risk": "high",
+      "tags": ["security", "middleware"]
+    },
+    {
+      "id": "lib:logger",
+      "kind": "lib",
+      "path": "src/lib/logger.ts",
+      "risk": "low",
+      "tags": ["observability"]
+    },
+    {
+      "id": "tbl:users",
+      "kind": "table",
+      "path": "db/migrations",
+      "risk": "high",
+      "tags": ["db", "auth"]
+    },
+    {
+      "id": "tbl:orders",
+      "kind": "table",
+      "path": "db/migrations",
+      "risk": "medium",
+      "tags": ["db", "orders"]
+    }
+  ],
+  "edges": [
+    { "from": "ep:POST /login", "to": "mw:rate-limit", "kind": "depends_on" },
+    { "from": "ep:POST /login", "to": "svc:auth", "kind": "calls" },
+    { "from": "ep:POST /orders", "to": "svc:orders", "kind": "calls" },
+    { "from": "svc:auth", "to": "tbl:users", "kind": "reads" },
+    { "from": "svc:auth", "to": "lib:logger", "kind": "imports" },
+    { "from": "svc:orders", "to": "tbl:orders", "kind": "writes" },
+    { "from": "svc:orders", "to": "svc:auth", "kind": "calls" },
+    { "from": "mw:rate-limit", "to": "lib:logger", "kind": "imports" }
+  ]
+}

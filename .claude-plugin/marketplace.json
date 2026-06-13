@@ -1,0 +1,21 @@
+{
+  "name": "repo-memory-marketplace",
+  "owner": {
+    "name": "Shubham",
+    "email": "shubham.bathwal@crayon.com"
+  },
+  "metadata": {
+    "description": "Marketplace hosting the Repository Memory plugin for Claude Code.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "repo-memory",
+      "source": "./",
+      "description": "Persistent repository memory + context layer for Claude Code PR reviews. Conventions, reviewer preferences, architecture graph, similar-PR recall — all stored as version-controlled files and assembled into prompt-cache-optimized review context.",
+      "version": "0.1.0",
+      "category": "code-review",
+      "keywords": ["code-review", "memory", "context", "prompt-caching"]
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/block-secret-read.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/block-secret-read.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__github_inline_comment__create_inline_comment",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/require-comment-approval.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(gh pr comment:*)",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/require-comment-approval.sh"
+          },
+          {
+            "type": "command",
+            "if": "Bash(gh pr review:*)",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/require-comment-approval.sh"
+          },
+          {
+            "type": "command",
+            "if": "Bash(gh api:*)",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/require-comment-approval.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/suggest-memory-update.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
