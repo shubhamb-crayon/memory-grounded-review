@@ -146,4 +146,6 @@ PR merged ─────────► claude-code-action ─► /update-memor
 
 ## License
 
-MIT. See the `LICENSE` you add to your fork. Replace the `your-org/repo-memory` placeholders in `plugin.json`, `marketplace.json`, and this README with your real repository before distributing.
+MIT — see [`LICENSE`](LICENSE).
+
+Before distributing, replace the `your-org/repo-memory` placeholders in `plugin.json`, `marketplace.json`, `README.md`, and both workflow templates with your real repository, and update the author/owner fields.

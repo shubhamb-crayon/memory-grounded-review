@@ -13,7 +13,15 @@ PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 TEMPLATES="${PLUGIN_ROOT}/templates"
 
 TARGET="${1:-$(pwd)}"
+if [ ! -d "$TARGET" ]; then
+  echo "Error: target directory does not exist: $TARGET" >&2
+  exit 1
+fi
 TARGET="$(cd "${TARGET}" && pwd)"
+if [ ! -d "$TEMPLATES" ]; then
+  echo "Error: templates directory not found at $TEMPLATES (run this from the installed plugin)." >&2
+  exit 1
+fi
 
 created=()
 skipped=()
@@ -59,12 +67,21 @@ CLAUDE_DST="${TARGET}/CLAUDE.md"
 BEGIN="<!-- BEGIN repo-memory -->"
 END="<!-- END repo-memory -->"
 
-# Extract the marked block (inclusive) from the template.
-BLOCK="$(awk -v b="$BEGIN" -v e="$END" '
-  $0 ~ b {inb=1}
-  inb {print}
-  $0 ~ e {inb=0}
-' "$CLAUDE_TEMPLATE")"
+# Extract the marked block (inclusive) from the template into a temp file.
+# Markers are matched as literal substrings via index() (no regex/escape surprises);
+# the block is carried in a file and read with getline (no awk -v escape processing).
+block_file="$(mktemp)"
+trap 'rm -f "$block_file"' EXIT
+awk -v b="$BEGIN" -v e="$END" '
+  index($0, b) { inb = 1 }
+  inb          { print }
+  index($0, e) { inb = 0 }
+' "$CLAUDE_TEMPLATE" > "$block_file"
+
+if [[ ! -s "$block_file" ]]; then
+  echo "Error: could not find the repo-memory block markers in $CLAUDE_TEMPLATE" >&2
+  exit 1
+fi
 
 if [[ ! -e "$CLAUDE_DST" ]]; then
   cp "$CLAUDE_TEMPLATE" "$CLAUDE_DST"
@@ -72,16 +89,21 @@ if [[ ! -e "$CLAUDE_DST" ]]; then
 elif grep -qF "$BEGIN" "$CLAUDE_DST"; then
   # Replace the existing marked block in place.
   tmp="$(mktemp)"
-  awk -v b="$BEGIN" -v e="$END" -v block="$BLOCK" '
-    $0 ~ b {print block; skip=1; next}
-    $0 ~ e {skip=0; next}
-    !skip {print}
+  awk -v b="$BEGIN" -v e="$END" -v bf="$block_file" '
+    index($0, b) {
+      while ((getline line < bf) > 0) print line
+      close(bf)
+      skip = 1
+      next
+    }
+    index($0, e) { skip = 0; next }
+    !skip        { print }
   ' "$CLAUDE_DST" > "$tmp"
   mv "$tmp" "$CLAUDE_DST"
   skipped+=("CLAUDE.md (repo-memory block refreshed)")
 else
   # Append the marked block to the existing file.
-  { printf '\n'; printf '%s\n' "$BLOCK"; } >> "$CLAUDE_DST"
+  { printf '\n'; cat "$block_file"; } >> "$CLAUDE_DST"
   skipped+=("CLAUDE.md (repo-memory block appended)")
 fi
 

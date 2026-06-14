@@ -39,6 +39,12 @@ jobs:
           ref: ${{ github.event.pull_request.base.ref || github.ref_name }}   # commit memory to the base branch
           fetch-depth: 0                                                       # full history for graph + git log
 
+      # Required so Claude's `git commit` has a committer identity in CI.
+      - name: Configure git identity for memory commits
+        run: |
+          git config user.name "repo-memory[bot]"
+          git config user.email "repo-memory[bot]@users.noreply.github.com"
+
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}

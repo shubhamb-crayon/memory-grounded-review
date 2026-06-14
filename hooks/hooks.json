@@ -2,7 +2,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Read|Edit|Write",
+        "matcher": "Read|Edit|Write|Grep",
         "hooks": [
           {
             "type": "command",
@@ -16,6 +16,10 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/block-secret-read.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/require-comment-approval.sh"
           }
         ]
       },
@@ -24,26 +28,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/require-comment-approval.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "if": "Bash(gh pr comment:*)",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/require-comment-approval.sh"
-          },
-          {
-            "type": "command",
-            "if": "Bash(gh pr review:*)",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/require-comment-approval.sh"
-          },
-          {
-            "type": "command",
-            "if": "Bash(gh api:*)",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/require-comment-approval.sh"
           }
         ]

@@ -34,16 +34,16 @@
 | High-risk nodes | 4 |
 | PRs indexed | 1 |
 
-## Confidence distribution (rules + patterns)
+## Confidence distribution (active rules + patterns)
 
 ```
-≥ 0.85  ███████████████      6
-0.70–0.85 ████████            3
-0.60–0.70 ███                 1
-< 0.60   ██ (aging/archived)  2
+≥ 0.85     ████████   4
+0.70–0.85  ██████     3
+0.60–0.70  ████       2
+< 0.60     ·          0   (+1 archived, excluded)
 ```
 
-**Mean confidence (active):** 0.83
+**Mean confidence (active):** 0.80 · **active entries:** 9 (4 DNA rules, 3 review patterns, 2 reviewer prefs)
 
 ## Recently indexed PRs
 

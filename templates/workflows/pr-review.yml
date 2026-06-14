@@ -25,8 +25,15 @@ permissions:
 
 jobs:
   review:
-    # Bot-loop guard: never let the review bot review its own commits.
-    if: github.actor != 'claude[bot]' && github.event.pull_request.draft == false
+    # Guards:
+    #  - bot-loop: never let the review bot review its own commits;
+    #  - drafts: skip until marked ready;
+    #  - forks: fork PRs don't receive repo secrets, so ANTHROPIC_API_KEY would be
+    #    empty and the run would fail — skip them (handle fork reviews separately if needed).
+    if: >-
+      github.actor != 'claude[bot]' &&
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
