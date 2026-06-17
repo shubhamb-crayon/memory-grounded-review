@@ -1,6 +1,6 @@
 ---
 name: review-memory
-description: Mine merged pull-request comment threads to extract recurring review patterns and individual reviewer preferences, then update their occurrence / accepted / rejected counts and confidence (with knowledge aging) in .claude/memory/review-memory.md. Use on merge (called by /repo-memory:update-memory) or when asked to learn how the team reviews. This is what stops the reviewer from re-litigating settled decisions.
+description: Mine merged pull-request comment threads to extract recurring review patterns and individual reviewer preferences, then update their occurrence / accepted / rejected counts and confidence (with knowledge aging) in .claude/memory/review-memory.md. Use on merge (called by /memory-grounded-review:update-memory) or when asked to learn how the team reviews. This is what stops the reviewer from re-litigating settled decisions.
 ---
 
 # review-memory — mine how the team reviews

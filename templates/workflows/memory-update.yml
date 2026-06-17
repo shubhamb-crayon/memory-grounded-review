@@ -1,13 +1,13 @@
 # Repository Memory — refresh memory on merge (Loop B).
 #
-# On every merged PR, runs /repo-memory:update-memory to mine the review thread,
+# On every merged PR, runs /memory-grounded-review:update-memory to mine the review thread,
 # incrementally update the architecture graph, index the PR for similar-PR recall,
 # lightly refresh affected conventions, regenerate MEMORY-STATUS.md, and COMMIT the
 # refreshed memory files back to the repo. This is how memory stays fresh with zero upkeep.
 #
 # Setup:
 #   1. Add ANTHROPIC_API_KEY (or CLAUDE_CODE_OAUTH_TOKEN) to repo Actions secrets.
-#   2. Replace the your-org/repo-memory placeholders below with the plugin's repo.
+#   2. Replace the shubhamb-crayon/memory-grounded-review placeholders below with the plugin's repo.
 #   3. If your default branch is protected against direct pushes, see the note at the
 #      bottom — switch the commit step to open a PR instead of pushing to the base branch.
 name: Repo Memory - Update on Merge
@@ -18,7 +18,7 @@ on:
   workflow_dispatch:        # manual trigger (e.g. first-time backfill)
 
 concurrency:
-  group: repo-memory-update          # serialize commits to memory files
+  group: memory-grounded-review-update          # serialize commits to memory files
   cancel-in-progress: false
 
 permissions:
@@ -42,19 +42,19 @@ jobs:
       # Required so Claude's `git commit` has a committer identity in CI.
       - name: Configure git identity for memory commits
         run: |
-          git config user.name "repo-memory[bot]"
-          git config user.email "repo-memory[bot]@users.noreply.github.com"
+          git config user.name "memory-grounded-review[bot]"
+          git config user.email "memory-grounded-review[bot]@users.noreply.github.com"
 
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          plugin_marketplaces: "https://github.com/your-org/repo-memory.git"
-          plugins: "repo-memory@repo-memory-marketplace"
+          plugin_marketplaces: "https://github.com/shubhamb-crayon/memory-grounded-review.git"
+          plugins: "memory-grounded-review@memory-grounded-review-marketplace"
           prompt: |
             REPO: ${{ github.repository }}
             MERGED PR NUMBER: ${{ github.event.pull_request.number }}
 
-            Run the /repo-memory:update-memory skill for the just-merged PR:
+            Run the /memory-grounded-review:update-memory skill for the just-merged PR:
               1. Mine the PR thread (review-memory) — update patterns + reviewer prefs.
               2. Incrementally update .claude/memory/architecture-graph.json (repo-graph).
               3. Index the PR into .claude/memory/pr-index/ (similar-pr).

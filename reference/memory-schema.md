@@ -1,6 +1,6 @@
 # Memory file schema
 
-The data layer is the repo. Everything Repository Memory "knows" lives in these files, committed under `.claude/memory/`. They are small, human-readable, and PR-reviewable. Skills read and write them; humans approve changes via normal PRs.
+The data layer is the repo. Everything Memory-Grounded Review "knows" lives in these files, committed under `.claude/memory/`. They are small, human-readable, and PR-reviewable. Skills read and write them; humans approve changes via normal PRs.
 
 ```
 .claude/

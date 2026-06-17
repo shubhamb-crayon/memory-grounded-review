@@ -1,10 +1,10 @@
-# Repository Memory for Claude Code
+# Memory-Grounded Review for Claude Code
 
-> **"GitHub remembers the code. Repository Memory remembers why."**
+> **"GitHub remembers the code. Memory-Grounded Review remembers why."**
 
 A persistent **memory + context layer** that makes Claude Code reviews repository-specific, cheaper, and consistent — built entirely out of Claude Code's own primitives and the repo itself. **No proprietary backend.**
 
-Generic AI review is stateless, generic, architecture-blind, amnesiac about history, expensive at scale, and repetitive. The knowledge that would fix all six already lives in your merged PRs, comments, docs, lint/CI config, and git history. Repository Memory captures it into a small set of version-controlled files the repo carries with it, and teaches Claude Code to read, apply, and update those files automatically on every PR.
+Generic AI review is stateless, generic, architecture-blind, amnesiac about history, expensive at scale, and repetitive. The knowledge that would fix all six already lives in your merged PRs, comments, docs, lint/CI config, and git history. Memory-Grounded Review captures it into a small set of version-controlled files the repo carries with it, and teaches Claude Code to read, apply, and update those files automatically on every PR.
 
 ---
 
@@ -26,7 +26,7 @@ Generic AI review is stateless, generic, architecture-blind, amnesiac about hist
 ## What's in this plugin
 
 ```
-repo-memory/
+memory-grounded-review/
 ├── .claude-plugin/
 │   ├── plugin.json              # plugin manifest
 │   └── marketplace.json         # one-plugin marketplace catalog
@@ -56,7 +56,7 @@ repo-memory/
     └── token-strategy.md        # §10 caching + budget rules
 ```
 
-After install, plugin skills are namespaced: `/repo-memory:pr-review`, `/repo-memory:refresh-memory`, `/repo-memory:update-memory`, `/repo-memory:bootstrap-memory`. The engine skills (`repo-dna`, `repo-graph`, `review-memory`, `similar-pr`, `context-pack`) are model-invoked — Claude auto-selects them by task context.
+After install, plugin skills are namespaced: `/memory-grounded-review:pr-review`, `/memory-grounded-review:refresh-memory`, `/memory-grounded-review:update-memory`, `/memory-grounded-review:bootstrap-memory`. The engine skills (`repo-dna`, `repo-graph`, `review-memory`, `similar-pr`, `context-pack`) are model-invoked — Claude auto-selects them by task context.
 
 ---
 
@@ -66,14 +66,14 @@ After install, plugin skills are namespaced: `/repo-memory:pr-review`, `/repo-me
 
 ```bash
 # In Claude Code (interactive)
-/plugin marketplace add your-org/repo-memory
-/plugin install repo-memory@repo-memory-marketplace
+/plugin marketplace add shubhamb-crayon/memory-grounded-review
+/plugin install memory-grounded-review@memory-grounded-review-marketplace
 ```
 
 Or test locally without installing:
 
 ```bash
-claude --plugin-dir /path/to/repo-memory
+claude --plugin-dir /path/to/memory-grounded-review
 ```
 
 ### 2. Bootstrap a repository (local, one step)
@@ -81,10 +81,10 @@ claude --plugin-dir /path/to/repo-memory
 From inside the repo you want to add memory to:
 
 ```
-/repo-memory:bootstrap-memory
+/memory-grounded-review:bootstrap-memory
 ```
 
-This copies the `CLAUDE.md` template, scaffolds `.claude/memory/`, and then offers to run the first `/repo-memory:refresh-memory` to populate the memory from your code and history. **No GitHub Actions workflows are installed by default** — local/interactive use needs none.
+This copies the `CLAUDE.md` template, scaffolds `.claude/memory/`, and then offers to run the first `/memory-grounded-review:refresh-memory` to populate the memory from your code and history. **No GitHub Actions workflows are installed by default** — local/interactive use needs none.
 
 > Prefer scripting it? `scripts/install-into-repo.sh /path/to/target-repo` does the same copy non-interactively.
 
@@ -96,13 +96,13 @@ CI is **opt-in**. Only do this if you want automated review-on-PR and memory-upd
 scripts/install-into-repo.sh /path/to/target-repo --with-ci
 ```
 
-(Or run `/repo-memory:bootstrap-memory` and tell it to enable CI.) Then add `ANTHROPIC_API_KEY` (or `CLAUDE_CODE_OAUTH_TOKEN`) to the target repo's Actions secrets, and point `plugin_marketplaces` in the two workflow files at your plugin repo.
+(Or run `/memory-grounded-review:bootstrap-memory` and tell it to enable CI.) Then add `ANTHROPIC_API_KEY` (or `CLAUDE_CODE_OAUTH_TOKEN`) to the target repo's Actions secrets, and point `plugin_marketplaces` in the two workflow files at your plugin repo.
 
 ---
 
 ## How it works — two loops, both just Claude Code
 
-**Loop A — Local developer loop (interactive).** Run `claude` in the repo. `CLAUDE.md` auto-loads and points at `.claude/memory/`. Invoke `/repo-memory:pr-review` on a branch; Claude classifies risk, assembles compressed context, and reviews. `/repo-memory:refresh-memory` re-derives conventions/graph on demand. Memory edits land as normal commits.
+**Loop A — Local developer loop (interactive).** Run `claude` in the repo. `CLAUDE.md` auto-loads and points at `.claude/memory/`. Invoke `/memory-grounded-review:pr-review` on a branch; Claude classifies risk, assembles compressed context, and reviews. `/memory-grounded-review:refresh-memory` re-derives conventions/graph on demand. Memory edits land as normal commits.
 
 **Loop B — CI loop (automated, opt-in).** Off by default; enable it with `--with-ci` (step 3 above) when you want it. Powered by the official [`anthropics/claude-code-action`](https://github.com/anthropics/claude-code-action), which runs the full Claude Code runtime inside a GitHub Actions runner.
 
@@ -154,4 +154,4 @@ PR merged ─────────► claude-code-action ─► /update-memor
 
 MIT — see [`LICENSE`](LICENSE).
 
-Before distributing, replace the `your-org/repo-memory` placeholders in `plugin.json`, `marketplace.json`, `README.md`, and both workflow templates with your real repository, and update the author/owner fields.
+Before distributing, replace the `shubhamb-crayon/memory-grounded-review` placeholders in `plugin.json`, `marketplace.json`, `README.md`, and both workflow templates with your real repository, and update the author/owner fields.

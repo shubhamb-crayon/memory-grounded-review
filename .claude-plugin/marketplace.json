@@ -1,15 +1,15 @@
 {
-  "name": "repo-memory-marketplace",
+  "name": "memory-grounded-review-marketplace",
   "owner": {
     "name": "Shubham",
     "email": "shubham.bathwal@crayon.com"
   },
   "plugins": [
     {
-      "name": "repo-memory",
+      "name": "memory-grounded-review",
       "source": "./",
       "description": "Persistent repository memory + context layer for Claude Code PR reviews. Conventions, reviewer preferences, architecture graph, similar-PR recall — all stored as version-controlled files and assembled into prompt-cache-optimized review context.",
-      "homepage": "https://github.com/your-org/repo-memory"
+      "homepage": "https://github.com/shubhamb-crayon/memory-grounded-review"
     }
   ]
 }

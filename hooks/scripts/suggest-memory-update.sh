@@ -11,7 +11,7 @@ if git rev-parse --git-dir >/dev/null 2>&1; then
   # Number of parents of HEAD: a merge commit has >= 2.
   parents="$(git show -s --format='%P' HEAD 2>/dev/null | wc -w | tr -d '[:space:]')"
   if [ "${parents:-0}" -gt 1 ] 2>/dev/null; then
-    echo "Repository Memory: HEAD is a merge commit — consider running /repo-memory:update-memory to learn from it."
+    echo "Repository Memory: HEAD is a merge commit — consider running /memory-grounded-review:update-memory to learn from it."
   fi
 fi
 

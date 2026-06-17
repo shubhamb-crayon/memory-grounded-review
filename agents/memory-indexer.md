@@ -1,6 +1,6 @@
 ---
 name: memory-indexer
-description: Cheap, high-volume scanning and indexing worker for Repository Memory. Invoked by repo-dna / repo-graph / similar-pr (and low-risk pr-review) to do the grunt work — walking the tree, sampling files, extracting imports/routes/tables/tags — on a smaller model, returning compact structured results so the main context stays clean and cheap.
+description: Cheap, high-volume scanning and indexing worker for Memory-Grounded Review. Invoked by repo-dna / repo-graph / similar-pr (and low-risk pr-review) to do the grunt work — walking the tree, sampling files, extracting imports/routes/tables/tags — on a smaller model, returning compact structured results so the main context stays clean and cheap.
 tools: Read, Grep, Glob, Bash
 model: haiku
 ---

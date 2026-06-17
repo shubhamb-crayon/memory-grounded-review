@@ -1,12 +1,12 @@
 # Repository Memory — automated, memory-grounded PR review (Loop B).
 #
 # Runs the official anthropics/claude-code-action (full Claude Code runtime in CI),
-# loads the repo-memory plugin, and runs /repo-memory:pr-review on every opened/updated PR.
+# loads the memory-grounded-review plugin, and runs /memory-grounded-review:pr-review on every opened/updated PR.
 # Findings post as inline comments on the exact diff lines.
 #
 # Setup:
 #   1. Add ANTHROPIC_API_KEY (or CLAUDE_CODE_OAUTH_TOKEN) to repo Actions secrets.
-#   2. Replace the your-org/repo-memory placeholders below with the plugin's repo.
+#   2. Replace the shubhamb-crayon/memory-grounded-review placeholders below with the plugin's repo.
 name: Repo Memory - PR Review
 
 on:
@@ -15,7 +15,7 @@ on:
 
 # One review per PR at a time; cancel superseded runs (replay handles new commits cheaply).
 concurrency:
-  group: repo-memory-review-${{ github.event.pull_request.number }}
+  group: memory-grounded-review-review-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 permissions:
@@ -43,16 +43,16 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # Load the Repository Memory plugin so /repo-memory:* skills are available.
-          plugin_marketplaces: "https://github.com/your-org/repo-memory.git"
-          plugins: "repo-memory@repo-memory-marketplace"
+          # Load the Repository Memory plugin so /memory-grounded-review:* skills are available.
+          plugin_marketplaces: "https://github.com/shubhamb-crayon/memory-grounded-review.git"
+          plugins: "memory-grounded-review@memory-grounded-review-marketplace"
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
 
             Run the Repository Memory review for this pull request:
 
-            Use the /repo-memory:pr-review skill. Ground every finding in this repo's
+            Use the /memory-grounded-review:pr-review skill. Ground every finding in this repo's
             memory under .claude/memory/ (repo-dna rules, review-memory patterns, the
             architecture impact set, and the top-3 similar past PRs). Classify risk per
             changed file and go deeper on high-risk files (auth, security, migrations,

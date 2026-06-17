@@ -1,6 +1,6 @@
 ---
 name: pr-review
-description: Review a pull request or the current branch, grounded in repository memory, with risk-based depth and prompt-cache-optimized context. Risk-classifies changed files, assembles context via context-pack, reviews against repo-dna rules + review-memory patterns + similar past PRs + the architecture impact set, escalates high-risk files to a deeper security pass, and posts findings as inline comments on the exact diff lines. Use as /repo-memory:pr-review, when asked to review a PR/branch/diff, or from the pr-review.yml CI workflow.
+description: Review a pull request or the current branch, grounded in repository memory, with risk-based depth and prompt-cache-optimized context. Risk-classifies changed files, assembles context via context-pack, reviews against repo-dna rules + review-memory patterns + similar past PRs + the architecture impact set, escalates high-risk files to a deeper security pass, and posts findings as inline comments on the exact diff lines. Use as /memory-grounded-review:pr-review, when asked to review a PR/branch/diff, or from the pr-review.yml CI workflow.
 ---
 
 # pr-review — memory-grounded, risk-based review
@@ -34,7 +34,7 @@ For high-risk files, run the `security-deep-dive` subagent and fold its findings
 Rate each finding **CRITICAL / HIGH / MEDIUM / LOW / NIT**. Drop low-value nits the team has historically rejected (check `review-memory` rejected counts). One comment per issue; group related ones.
 
 ## Step 5 — Post (respecting the approval non-negotiable)
-- **Interactive (`/repo-memory:pr-review`):** present the findings list and **wait for approval** before posting. The plugin's `PreToolUse` hook also gates comment-posting tools. After approval, post inline comments on the exact lines.
+- **Interactive (`/memory-grounded-review:pr-review`):** present the findings list and **wait for approval** before posting. The plugin's `PreToolUse` hook also gates comment-posting tools. After approval, post inline comments on the exact lines.
 - **CI (`pr-review.yml`):** post inline comments with `mcp__github_inline_comment__create_inline_comment` (or `gh pr comment` for the summary). Post a brief top-level summary: risk class, counts by severity, and which memory rules/PRs were applied. **Only post GitHub comments — don't dump the review as chat text.**
 
 ## Step 6 — Leave a trail for replay

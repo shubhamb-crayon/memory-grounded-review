@@ -1,6 +1,6 @@
 ---
 name: update-memory
-description: Update repository memory from a just-merged pull request — mines the PR thread (review-memory), incrementally updates the architecture graph (repo-graph), indexes the PR for similar-PR recall (similar-pr), lightly refreshes affected conventions (repo-dna), and regenerates MEMORY-STATUS.md. Use as /repo-memory:update-memory or from the memory-update.yml CI workflow on merge. This is how memory stays fresh with zero human upkeep.
+description: Update repository memory from a just-merged pull request — mines the PR thread (review-memory), incrementally updates the architecture graph (repo-graph), indexes the PR for similar-PR recall (similar-pr), lightly refreshes affected conventions (repo-dna), and regenerates MEMORY-STATUS.md. Use as /memory-grounded-review:update-memory or from the memory-update.yml CI workflow on merge. This is how memory stays fresh with zero human upkeep.
 ---
 
 # update-memory — keep memory fresh on every merge

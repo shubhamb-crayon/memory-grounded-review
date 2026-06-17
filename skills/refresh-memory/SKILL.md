@@ -1,6 +1,6 @@
 ---
 name: refresh-memory
-description: Re-derive a repository's memory on demand — runs a full repo-dna pass (conventions + summaries) and a full repo-graph build (architecture-graph.json), then regenerates the MEMORY-STATUS.md dashboard. Use as /repo-memory:refresh-memory, on first install, or periodically (e.g. weekly in CI) to keep conventions and the architecture map current.
+description: Re-derive a repository's memory on demand — runs a full repo-dna pass (conventions + summaries) and a full repo-graph build (architecture-graph.json), then regenerates the MEMORY-STATUS.md dashboard. Use as /memory-grounded-review:refresh-memory, on first install, or periodically (e.g. weekly in CI) to keep conventions and the architecture map current.
 ---
 
 # refresh-memory — rebuild conventions + graph on demand
@@ -8,7 +8,7 @@ description: Re-derive a repository's memory on demand — runs a full repo-dna 
 The on-demand, full-rebuild entry point. Use it on first install and whenever you want memory re-derived from the current state of the repo (vs. the incremental update that runs on each merge).
 
 ## Procedure
-1. **Preconditions.** Confirm `.claude/memory/` exists. If not, suggest `/repo-memory:bootstrap-memory` first.
+1. **Preconditions.** Confirm `.claude/memory/` exists. If not, suggest `/memory-grounded-review:bootstrap-memory` first.
 2. **Repository DNA (full).** Run the **`repo-dna`** skill in full-build mode → refreshes `repo-dna.md`, `summaries/repo-summary.md`, and `summaries/files/<path>.md`. Apply knowledge aging.
 3. **Architecture graph (full).** Run the **`repo-graph`** skill in full-build mode → rebuilds `architecture-graph.json` with stable ordering.
 4. **Dashboard.** Regenerate `MEMORY-STATUS.md` (rule/pattern counts, confidence distribution, last-refreshed, graph size). Follow the layout in `${CLAUDE_PLUGIN_ROOT}/templates/MEMORY-STATUS.md`.

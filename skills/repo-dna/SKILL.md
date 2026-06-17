@@ -1,6 +1,6 @@
 ---
 name: repo-dna
-description: Derive or refresh a repository's coding conventions and rules — the "Repository DNA" — from its code, merged PRs, docs, and lint/CI config, writing them with confidence scores and evidence to .claude/memory/repo-dna.md. Use on first install, on /repo-memory:refresh-memory, when asked to learn or update repo conventions/standards, or periodically in CI. Also (re)generates the compressed repo + per-file summaries used for cached review context.
+description: Derive or refresh a repository's coding conventions and rules — the "Repository DNA" — from its code, merged PRs, docs, and lint/CI config, writing them with confidence scores and evidence to .claude/memory/repo-dna.md. Use on first install, on /memory-grounded-review:refresh-memory, when asked to learn or update repo conventions/standards, or periodically in CI. Also (re)generates the compressed repo + per-file summaries used for cached review context.
 ---
 
 # repo-dna — build & refresh Repository DNA
@@ -15,7 +15,7 @@ You extract the conventions this repo **actually follows** (not textbook best pr
 **First, read the schema** so your output is valid and diff-friendly: `${CLAUDE_PLUGIN_ROOT}/reference/memory-schema.md`. For the summary-size rules: `${CLAUDE_PLUGIN_ROOT}/reference/token-strategy.md`.
 
 ## When to run which mode
-- **Full build** — first install, `/repo-memory:refresh-memory`, or weekly CI. Derive the full rule set + summaries.
+- **Full build** — first install, `/memory-grounded-review:refresh-memory`, or weekly CI. Derive the full rule set + summaries.
 - **Light refresh** — after a merge (called by `update-memory`). Only re-confirm/adjust rules touched by the merged files; apply aging; don't rebuild everything.
 
 ## Procedure

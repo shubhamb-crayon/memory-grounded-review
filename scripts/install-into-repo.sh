@@ -84,8 +84,8 @@ fi
 # 4) CLAUDE.md — merge the marked block.
 CLAUDE_TEMPLATE="${TEMPLATES}/CLAUDE.md"
 CLAUDE_DST="${TARGET}/CLAUDE.md"
-BEGIN="<!-- BEGIN repo-memory -->"
-END="<!-- END repo-memory -->"
+BEGIN="<!-- BEGIN memory-grounded-review -->"
+END="<!-- END memory-grounded-review -->"
 
 # Extract the marked block (inclusive) from the template into a temp file.
 # Markers are matched as literal substrings via index() (no regex/escape surprises);
@@ -99,7 +99,7 @@ awk -v b="$BEGIN" -v e="$END" '
 ' "$CLAUDE_TEMPLATE" > "$block_file"
 
 if [[ ! -s "$block_file" ]]; then
-  echo "Error: could not find the repo-memory block markers in $CLAUDE_TEMPLATE" >&2
+  echo "Error: could not find the memory-grounded-review block markers in $CLAUDE_TEMPLATE" >&2
   exit 1
 fi
 
@@ -120,11 +120,11 @@ elif grep -qF "$BEGIN" "$CLAUDE_DST"; then
     !skip        { print }
   ' "$CLAUDE_DST" > "$tmp"
   mv "$tmp" "$CLAUDE_DST"
-  skipped+=("CLAUDE.md (repo-memory block refreshed)")
+  skipped+=("CLAUDE.md (memory-grounded-review block refreshed)")
 else
   # Append the marked block to the existing file.
   { printf '\n'; cat "$block_file"; } >> "$CLAUDE_DST"
-  skipped+=("CLAUDE.md (repo-memory block appended)")
+  skipped+=("CLAUDE.md (memory-grounded-review block appended)")
 fi
 
 echo "Created:"
@@ -135,7 +135,7 @@ if [[ ${#skipped[@]} -eq 0 ]]; then echo "  (none)"; else printf '  = %s\n' "${s
 echo
 echo "Next steps:"
 echo "  1. Review the seed files under .claude/memory/ — they are EXAMPLES."
-echo "  2. Run  /repo-memory:refresh-memory  to derive real conventions + the architecture graph."
+echo "  2. Run  /memory-grounded-review:refresh-memory  to derive real conventions + the architecture graph."
 echo "  3. Commit the result."
 echo
 if [ "$WITH_CI" -eq 1 ]; then

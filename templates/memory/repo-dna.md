@@ -1,7 +1,7 @@
 # Repository DNA
 
 > Conventions and rules **this repo actually follows**, with confidence + evidence.
-> Maintained by the `repo-dna` skill. This is a **seed example** — `/repo-memory:refresh-memory`
+> Maintained by the `repo-dna` skill. This is a **seed example** — `/memory-grounded-review:refresh-memory`
 > replaces it with rules derived from your real code, PRs, and lint/CI config.
 >
 > Confidence: ≥ 0.85 apply firmly · 0.6–0.85 suggest · < 0.6 mention only.
