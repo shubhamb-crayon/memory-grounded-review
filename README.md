@@ -50,7 +50,7 @@ repo-memory/
 │   ├── CLAUDE.md                # points Claude at the memory + non-negotiables
 │   ├── memory/                  # seed .claude/memory/ tree (schema-correct examples)
 │   ├── MEMORY-STATUS.md         # the generated "dashboard" (markdown)
-│   └── workflows/               # pr-review.yml + memory-update.yml
+│   └── workflows/               # pr-review.yml + memory-update.yml (OPTIONAL — only with --with-ci)
 └── reference/                   # shared knowledge the skills read on demand
     ├── memory-schema.md         # full file schema spec
     └── token-strategy.md        # §10 caching + budget rules
@@ -76,7 +76,7 @@ Or test locally without installing:
 claude --plugin-dir /path/to/repo-memory
 ```
 
-### 2. Bootstrap a repository (one step)
+### 2. Bootstrap a repository (local, one step)
 
 From inside the repo you want to add memory to:
 
@@ -84,13 +84,19 @@ From inside the repo you want to add memory to:
 /repo-memory:bootstrap-memory
 ```
 
-This copies the `CLAUDE.md` template, scaffolds `.claude/memory/`, drops the two GitHub Actions workflows into `.github/workflows/`, and then offers to run the first `/repo-memory:refresh-memory` to populate the memory from your code and history.
+This copies the `CLAUDE.md` template, scaffolds `.claude/memory/`, and then offers to run the first `/repo-memory:refresh-memory` to populate the memory from your code and history. **No GitHub Actions workflows are installed by default** — local/interactive use needs none.
 
-> Prefer scripting it? `scripts/install-into-repo.sh /path/to/target-repo` does the file copy non-interactively.
+> Prefer scripting it? `scripts/install-into-repo.sh /path/to/target-repo` does the same copy non-interactively.
 
-### 3. Set the CI secret
+### 3. (Optional) Enable GitHub Actions CI — Loop B
 
-Add `ANTHROPIC_API_KEY` (or `CLAUDE_CODE_OAUTH_TOKEN`) to the target repo's Actions secrets so the workflows can run.
+CI is **opt-in**. Only do this if you want automated review-on-PR and memory-update-on-merge:
+
+```bash
+scripts/install-into-repo.sh /path/to/target-repo --with-ci
+```
+
+(Or run `/repo-memory:bootstrap-memory` and tell it to enable CI.) Then add `ANTHROPIC_API_KEY` (or `CLAUDE_CODE_OAUTH_TOKEN`) to the target repo's Actions secrets, and point `plugin_marketplaces` in the two workflow files at your plugin repo.
 
 ---
 
@@ -98,7 +104,7 @@ Add `ANTHROPIC_API_KEY` (or `CLAUDE_CODE_OAUTH_TOKEN`) to the target repo's Acti
 
 **Loop A — Local developer loop (interactive).** Run `claude` in the repo. `CLAUDE.md` auto-loads and points at `.claude/memory/`. Invoke `/repo-memory:pr-review` on a branch; Claude classifies risk, assembles compressed context, and reviews. `/repo-memory:refresh-memory` re-derives conventions/graph on demand. Memory edits land as normal commits.
 
-**Loop B — CI loop (automated, the team default).** Powered by the official [`anthropics/claude-code-action`](https://github.com/anthropics/claude-code-action), which runs the full Claude Code runtime inside a GitHub Actions runner.
+**Loop B — CI loop (automated, opt-in).** Off by default; enable it with `--with-ci` (step 3 above) when you want it. Powered by the official [`anthropics/claude-code-action`](https://github.com/anthropics/claude-code-action), which runs the full Claude Code runtime inside a GitHub Actions runner.
 
 ```
 PR opened/updated ─► claude-code-action ─► /pr-review

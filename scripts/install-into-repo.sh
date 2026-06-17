@@ -3,7 +3,10 @@
 # install-into-repo.sh — copy Repository Memory templates into a target repo.
 # Idempotent: never overwrites existing files. CLAUDE.md is merged via markers.
 #
-# Usage: install-into-repo.sh [TARGET_REPO_DIR]   (defaults to current directory)
+# Usage: install-into-repo.sh [TARGET_REPO_DIR] [--with-ci]
+#   TARGET_REPO_DIR  repo to install into (defaults to the current directory)
+#   --with-ci        ALSO install the optional GitHub Actions workflows (Loop B).
+#                    Off by default — local/interactive use needs no CI.
 #
 set -euo pipefail
 
@@ -12,7 +15,22 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 TEMPLATES="${PLUGIN_ROOT}/templates"
 
-TARGET="${1:-$(pwd)}"
+# Parse args: one optional positional TARGET plus the optional --with-ci flag.
+WITH_CI=0
+TARGET=""
+for arg in "$@"; do
+  case "$arg" in
+    --with-ci|--with-workflows|--ci) WITH_CI=1 ;;
+    -h|--help)
+      echo "Usage: install-into-repo.sh [TARGET_REPO_DIR] [--with-ci]"
+      echo "  --with-ci   also install the optional GitHub Actions workflows (off by default)"
+      exit 0 ;;
+    -*) echo "Error: unknown option: $arg" >&2; exit 1 ;;
+    *)  if [ -z "$TARGET" ]; then TARGET="$arg"; else echo "Error: unexpected argument: $arg" >&2; exit 1; fi ;;
+  esac
+done
+
+TARGET="${TARGET:-$(pwd)}"
 if [ ! -d "$TARGET" ]; then
   echo "Error: target directory does not exist: $TARGET" >&2
   exit 1
@@ -57,9 +75,11 @@ copy_tree "${TEMPLATES}/memory" "${TARGET}/.claude/memory"
 # 2) MEMORY-STATUS.md
 copy_file "${TEMPLATES}/MEMORY-STATUS.md" "${TARGET}/MEMORY-STATUS.md"
 
-# 3) GitHub Actions workflows
-copy_file "${TEMPLATES}/workflows/pr-review.yml"    "${TARGET}/.github/workflows/pr-review.yml"
-copy_file "${TEMPLATES}/workflows/memory-update.yml" "${TARGET}/.github/workflows/memory-update.yml"
+# 3) GitHub Actions workflows — OPTIONAL (Loop B). Installed only with --with-ci.
+if [ "$WITH_CI" -eq 1 ]; then
+  copy_file "${TEMPLATES}/workflows/pr-review.yml"     "${TARGET}/.github/workflows/pr-review.yml"
+  copy_file "${TEMPLATES}/workflows/memory-update.yml" "${TARGET}/.github/workflows/memory-update.yml"
+fi
 
 # 4) CLAUDE.md — merge the marked block.
 CLAUDE_TEMPLATE="${TEMPLATES}/CLAUDE.md"
@@ -113,10 +133,16 @@ echo
 echo "Skipped (already existed):"
 if [[ ${#skipped[@]} -eq 0 ]]; then echo "  (none)"; else printf '  = %s\n' "${skipped[@]}"; fi
 echo
-cat <<'NEXT'
-Next steps:
-  1. Add ANTHROPIC_API_KEY (or CLAUDE_CODE_OAUTH_TOKEN) to the repo's GitHub Actions secrets.
-  2. Review the seed files under .claude/memory/ — they are EXAMPLES.
-  3. Run  /repo-memory:refresh-memory  to derive real conventions + the architecture graph.
-  4. Commit the result as a normal PR.
-NEXT
+echo "Next steps:"
+echo "  1. Review the seed files under .claude/memory/ — they are EXAMPLES."
+echo "  2. Run  /repo-memory:refresh-memory  to derive real conventions + the architecture graph."
+echo "  3. Commit the result."
+echo
+if [ "$WITH_CI" -eq 1 ]; then
+  echo "GitHub Actions (Loop B) installed. Also:"
+  echo "  - Add ANTHROPIC_API_KEY (or CLAUDE_CODE_OAUTH_TOKEN) to the repo's Actions secrets."
+  echo "  - Set plugin_marketplaces in .github/workflows/*.yml to your plugin repo URL."
+else
+  echo "GitHub Actions CI was NOT installed (local/interactive use needs none)."
+  echo "  Enable it later with:  $(basename "$0") \"$TARGET\" --with-ci"
+fi
