@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# install-into-repo.sh — copy Repository Memory templates into a target repo.
+# install-into-repo.sh — copy Memory-Grounded Review templates into a target repo.
 # Idempotent: never overwrites existing files. CLAUDE.md is merged via markers.
 #
 # Usage: install-into-repo.sh [TARGET_REPO_DIR] [--with-ci]
@@ -65,7 +65,7 @@ copy_tree() {
   done < <(find "$src_root" -type f ! -name '.DS_Store' ! -name 'Thumbs.db' -print0)
 }
 
-echo "Installing Repository Memory into: $TARGET"
+echo "Installing Memory-Grounded Review into: $TARGET"
 echo "From plugin: $PLUGIN_ROOT"
 echo
 

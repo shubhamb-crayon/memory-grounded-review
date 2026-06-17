@@ -1,6 +1,6 @@
 {
   "name": "memory-grounded-review",
-  "description": "Repository Memory for Claude Code — a persistent, version-controlled memory + context layer that makes PR reviews repository-specific, cheaper, and consistent. Learns conventions, reviewer preferences, a lightweight architecture graph, and similar-PR history into files under .claude/memory/, then grounds every review in them with prompt-cache-optimized context.",
+  "description": "Memory-Grounded Review for Claude Code — a persistent, version-controlled memory + context layer that makes PR reviews repository-specific, cheaper, and consistent. Learns conventions, reviewer preferences, a lightweight architecture graph, and similar-PR history into files under .claude/memory/, then grounds every review in them with prompt-cache-optimized context.",
   "version": "0.1.0",
   "author": {
     "name": "Shubham",

@@ -41,6 +41,6 @@ case "$tool" in
 esac
 
 if [ "$needs_approval" = "1" ]; then
-  printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"ask","permissionDecisionReason":"Repository Memory: confirm before posting this comment/review to GitHub. (Non-negotiable: never post without approval.)"}}'
+  printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"ask","permissionDecisionReason":"Memory-Grounded Review: confirm before posting this comment/review to GitHub. (Non-negotiable: never post without approval.)"}}'
 fi
 exit 0

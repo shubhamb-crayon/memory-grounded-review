@@ -1,4 +1,4 @@
-# Repository Memory — refresh memory on merge (Loop B).
+# Memory-Grounded Review — refresh memory on merge (Loop B).
 #
 # On every merged PR, runs /memory-grounded-review:update-memory to mine the review thread,
 # incrementally update the architecture graph, index the PR for similar-PR recall,

@@ -61,7 +61,7 @@ SECRET_RE="$SECRET_RE"'|(^|[^A-Za-z0-9_])\.?credentials(\.(json|ya?ml|ini|cfg|co
 SECRET_RE="$SECRET_RE"'|service[_-]account[^[:space:]]*\.json'       # GCP service-account key
 
 if printf '%s' "$target" | grep -Eiq "$SECRET_RE"; then
-  printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"Repository Memory blocked access to a likely secret file or path. Secrets must never be read or copied into memory files. (If this is a false positive, read the specific source file directly.)"}}'
+  printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"Memory-Grounded Review blocked access to a likely secret file or path. Secrets must never be read or copied into memory files. (If this is a false positive, read the specific source file directly.)"}}'
   exit 0
 fi
 

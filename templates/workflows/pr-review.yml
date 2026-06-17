@@ -1,4 +1,4 @@
-# Repository Memory — automated, memory-grounded PR review (Loop B).
+# Memory-Grounded Review — automated, memory-grounded PR review (Loop B).
 #
 # Runs the official anthropics/claude-code-action (full Claude Code runtime in CI),
 # loads the memory-grounded-review plugin, and runs /memory-grounded-review:pr-review on every opened/updated PR.
@@ -43,14 +43,14 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # Load the Repository Memory plugin so /memory-grounded-review:* skills are available.
+          # Load the Memory-Grounded Review plugin so /memory-grounded-review:* skills are available.
           plugin_marketplaces: "https://github.com/shubhamb-crayon/memory-grounded-review.git"
           plugins: "memory-grounded-review@memory-grounded-review-marketplace"
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
 
-            Run the Repository Memory review for this pull request:
+            Run the Memory-Grounded Review review for this pull request:
 
             Use the /memory-grounded-review:pr-review skill. Ground every finding in this repo's
             memory under .claude/memory/ (repo-dna rules, review-memory patterns, the
