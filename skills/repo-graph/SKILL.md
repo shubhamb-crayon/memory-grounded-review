@@ -21,7 +21,7 @@ You maintain a **deliberately lightweight** dependency graph: enough to answer "
    Prefer routing this scan to the `memory-indexer` subagent (cheaper model, keeps main context clean).
 2. **Discover edges** by following imports/requires, function calls across module boundaries, DB reads/writes, publish/subscribe, and IaC wiring. Use edge `kind` from the schema (`calls`, `imports`, `reads`, `writes`, `publishes`, `subscribes`, `triggers`, `depends_on`).
 3. **Annotate risk.** Mark `risk: high` for auth, security, DB migrations, infra, payment, and anything with high fan-in. `medium` for core domain logic / API contracts. `low` for docs/config/tests.
-4. **Link summaries.** Set `summary_ref` on important nodes to their `summaries/files/<path>.md` (created by `repo-dna`).
+4. **Link summaries (deterministic, full coverage).** For **every** `service` and `lib` node, plus every `risk: high` node, set `summary_ref` to `summaries/files/<path>.md` derived from the node's `path` (e.g. node `path: services/translation/...` → `summaries/files/services/translation.md`). This node list is the **worklist `repo-dna` uses to write summaries**, so every service gets one — not just the handful sampled for conventions. Don't leave service/lib nodes without a `summary_ref`.
 5. **Write** the JSON with `version`, `generated_at` (UTC ISO-8601), accurate `node_count`/`edge_count`, and **stable ordering** (sort nodes by `id`, edges by `from` then `to`) so diffs are minimal.
 
 ### B. Incremental update (on merge — the default in CI)

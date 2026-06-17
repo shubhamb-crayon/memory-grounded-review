@@ -5,6 +5,15 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] — 2026-06-17
+
+Fixes incomplete per-file summary coverage found on the same monorepo: the graph held all 27 services, but only 2 had summaries because `repo-dna` summarized only the files it sampled while deriving conventions.
+
+### Fixed
+- **Summaries are now graph-driven and complete.** `repo-dna` writes a brief `summaries/files/<path>.md` for **every** service and lib node in `architecture-graph.json` (plus high-risk/high-fan-in), instead of just sampled files. `repo-graph` now sets `summary_ref` on every service/lib/high-risk node as the worklist.
+- **`refresh-memory` runs the graph before DNA** so the node list can drive summary coverage, and reports "summaries: N of M service/lib nodes."
+- **`repo-dna` samples conventions across many services**, not one, to avoid single-service bias (the run had leaned ~16× on one service).
+
 ## [0.2.0] — 2026-06-17
 
 Fixes a major gap found on first real-world use (a 28-service monorepo with 200+ PRs): the full refresh derived conventions + the architecture graph but **never mined review history**, so `review-memory.md`, `pr-index/`, and `MEMORY-STATUS.md` stayed as shipped seed data — which then made PR reviews generic and surfaced a phantom seed PR.

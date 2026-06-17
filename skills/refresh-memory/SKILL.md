@@ -11,9 +11,9 @@ The on-demand, full-rebuild entry point. Unlike the per-merge `update-memory`, t
 
 1. **Preconditions.** Confirm `.claude/memory/` exists (else suggest `/memory-grounded-review:bootstrap-memory`). Check GitHub access: `gh auth status` (or GitHub MCP). If there's no GitHub access, do steps 2–3 and warn that review-history backfill (steps 4–5) was skipped.
 
-2. **Repository DNA (full).** Run the **`repo-dna`** skill in full-build mode → `repo-dna.md`, `summaries/repo-summary.md`, `summaries/files/<path>.md`. Apply aging.
+2. **Architecture graph (full) — FIRST.** Run the **`repo-graph`** skill in full-build mode → rebuild `architecture-graph.json` with stable ordering, with a `summary_ref` on every service/lib/high-risk node. Build it before DNA so its node list can drive full summary coverage.
 
-3. **Architecture graph (full).** Run the **`repo-graph`** skill in full-build mode → rebuild `architecture-graph.json` with stable ordering.
+3. **Repository DNA (full).** Run the **`repo-dna`** skill in full-build mode → `repo-dna.md` (conventions sampled across many services, not one), `summaries/repo-summary.md`, and a per-node `summaries/files/<path>.md` for **every** service and lib node in the graph (not just sampled files). Apply aging.
 
 4. **Review history backfill (this is the step that was missing).** Run the **`review-memory`** skill in **backfill mode** over merged PRs (see that skill). Mine reviewer comments / requested-changes across history into real `review-memory.md` patterns + reviewer preferences. This is what makes reviews reflect *how this team actually reviews*.
 
@@ -30,7 +30,7 @@ The on-demand, full-rebuild entry point. Unlike the per-merge `update-memory`, t
    ```
    This computes `MEMORY-STATUS.md` from the actual files (counts, confidence distribution, freshness, real repo name) — never from a template. Do **not** hand-write the dashboard.
 
-8. **Report & stage.** Summarize: conventions (added/aged/archived), graph node/edge delta, **review patterns + reviewer prefs mined**, **PRs indexed**, seeds purged. Leave everything staged for the human to review and commit — memory changes are PRs.
+8. **Report & stage.** Summarize: conventions (added/aged/archived), graph node/edge delta, **per-node summaries written (N of M service/lib nodes — should be all of them)**, **review patterns + reviewer prefs mined**, **PRs indexed**, seeds purged. Leave everything staged for the human to review and commit — memory changes are PRs.
 
 ## Scope note
 This is the **heavy** path (minutes on a large repo, and review backfill makes many `gh` calls). The per-merge path is `update-memory`. Run a full refresh on first install and occasionally (e.g. monthly / on a scheduled job), not on every merge.
