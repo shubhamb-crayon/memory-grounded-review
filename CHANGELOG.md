@@ -5,6 +5,20 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] — 2026-06-17
+
+Fixes a major gap found on first real-world use (a 28-service monorepo with 200+ PRs): the full refresh derived conventions + the architecture graph but **never mined review history**, so `review-memory.md`, `pr-index/`, and `MEMORY-STATUS.md` stayed as shipped seed data — which then made PR reviews generic and surfaced a phantom seed PR.
+
+### Fixed
+- **`refresh-memory` now backfills review history.** It runs `review-memory` (backfill) and `similar-pr` (bulk index) over merged PRs in addition to `repo-dna` + `repo-graph`, then purges any leftover seed/example entries that don't map to the real repo.
+- **`MEMORY-STATUS.md` is now generated deterministically** by `scripts/gen-memory-status.sh` (counts, confidence distribution, freshness, real repo name from git) — it can no longer show template/seed values like a phantom PR #1421.
+- **No more fictional seed data installed.** `bootstrap` now lays down empty skeletons; nothing fictional (`@aravind`, login/orders, PR #1421) is written into a real repo.
+
+### Added
+- **`review-memory` BACKFILL mode** — paginates merged PRs, prioritizes threads with discussion/requested-changes, batches extraction through the `memory-indexer` subagent, caps the first pass (~60–100 PRs) for cost.
+- **`similar-pr` BACKFILL mode** — bulk-indexes recent merged PRs.
+- **`pr-review` quality bar** — concrete senior-engineer comment examples, explicit grounding requirements, and graceful handling that ignores empty/seed memory instead of grounding in fake patterns.
+
 ## [0.1.0] — 2026-06-17
 
 Initial release of **Memory-Grounded Review** — a persistent, version-controlled

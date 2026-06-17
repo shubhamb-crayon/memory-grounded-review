@@ -24,7 +24,7 @@ Gets a repository from zero to "memory-ready" in one step. **Local-first: by def
 3. **Merge `CLAUDE.md` carefully.** If the repo has no `CLAUDE.md`, copy the template. If it already has one, **insert the block between the `<!-- BEGIN memory-grounded-review -->` / `<!-- END memory-grounded-review -->` markers** without disturbing the rest. On re-run, replace only that marked block so updates land cleanly.
 
 4. **Tell the user what's left to do:**
-   - The seed `.claude/memory/**` files are **examples** — they'll be replaced by real, derived content in the next step.
+   - The `.claude/memory/**` files start as **empty skeletons** — the next step fills them with real, derived content. (Nothing fictional is installed.)
    - Replace any `shubhamb-crayon/...` placeholders if they forked the plugin.
 
 5. **Optional — enable GitHub Actions CI (Loop B).** Only if the user explicitly wants automated review-on-PR and memory-update-on-merge. **Do not do this by default.** When asked, re-run the installer with the flag:

@@ -40,8 +40,24 @@ Rate each finding **CRITICAL / HIGH / MEDIUM / LOW / NIT**. Drop low-value nits 
 ## Step 6 — Leave a trail for replay
 Note what you reviewed (commit SHA, findings) so a later `synchronize` only re-reviews the new delta (see `context-pack` replay).
 
-## Output contract
-Each inline comment: **[SEVERITY] finding — why (cite rule id / PR # / evidence) — suggested fix.** Keep it specific and kind; this should read like your most senior reviewer on a good day, not a linter.
+## Output contract & quality bar
+Write like a senior engineer who knows this codebase — not a linter. Each inline comment:
+
+**[SEVERITY] One-line claim.** Why it matters *here* (cite a `repo-dna` rule id, a prior PR #, or a concrete failure mode), then a specific fix — ideally a 1–3 line code suggestion in the repo's own style.
+
+What "senior" means concretely:
+- **Be specific to the change.** Reference the actual symbol/line, not a generic category. "❌ Consider error handling" → "✅ `process()` calls `finish_component_preprocess` only on the happy path; an exception after `start_…` leaves the component stuck in `PREPROCESSING` (violates `lambda-lifecycle-pattern`). Move it to a `finally`/`except` like `invoke.py:L40-53`."
+- **Ground every finding** in a `repo-dna` rule id, a `review-memory` pattern, an impact-set effect, a similar past PR, or a demonstrable bug. If you can't ground it, it's probably a nit — drop it or mark it `[NIT]`.
+- **Explain the consequence**, not just the rule ("…so warm Lambdas leak this client across invocations", "…this cascades to all 28 services via `lib:common`").
+- **Offer the fix in-style.** Match the conventions in `repo-dna` (e.g. `get_env(...)` settings, `BedrockWrapper`, powertools logging).
+- **Don't re-litigate** anything `review-memory` shows the team already settled. **Don't pad** with praise or generic best-practice the repo hasn't adopted.
+- **Lead with what matters.** Order CRITICAL/HIGH first; collapse trivia.
+
+Top-level summary comment: risk class, counts by severity, and the 1–3 things you'd block the merge on.
+
+## Handling thin or seed memory
+- If `review-memory.md` / `pr-index/` are **empty or still the shipped seed** (ids like `di-over-singleton`, `validate-at-boundary`, `pref-aravind-tests`, or PR `#1421`), **ignore them** — do not ground comments in fictitious patterns. Lean on `repo-dna` + the diff, and tell the user to run `/memory-grounded-review:refresh-memory` to backfill review history.
+- Never invent a convention or a "the team prefers…" claim that isn't in memory or visible in the diff.
 
 ## Guardrails
 - Never post without approval (interactive) / outside the workflow's permissions (CI).
